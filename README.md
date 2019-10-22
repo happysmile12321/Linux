@@ -3,8 +3,9 @@
 - 00 linux课程安排&考试安排&往年考试题
 - 01 linux磁盘安装怎么分区&硬盘标识&文件系统&kdump
 - 02 linux常用命令&图形界面&字符图形界面切换&运行级别
-- 03 linux常用命令&链接&命令替换&管道
+- 03 linux常用命令&链接&命令替换&管道&inode节点&ln命令
 - 04 linux常用命令&权限&隐藏属性
+- 05 linux中vim编辑器的高级使用技巧&linux文件系统分区&linux和windows系统的格式化工具&linux磁盘用量工具df和du&linux分区工具fdisk
 
 
 
