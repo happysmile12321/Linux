@@ -6,6 +6,7 @@
 - 03 linux常用命令&链接&命令替换&管道&inode节点&ln命令
 - 04 linux常用命令&权限&隐藏属性
 - 05 linux中vim编辑器的高级使用技巧&linux文件系统分区&linux和windows系统的格式化工具&linux磁盘用量工具df和du&linux分区工具fdisk&使用mount命令&修改配置文件挂载&mkfs格式化使用&UUID挂载文件分区
+- 06 linux用户管理
 
 ## 笔记更新日志
 
