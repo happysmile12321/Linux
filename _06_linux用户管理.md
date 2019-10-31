@@ -125,7 +125,241 @@ userdel u3
 userdel -r u4
 ```
 
+## 一些配置文件
 
+> linux对组的一些操作的前铺垫
+
+```
+#存放用户启动文件，由root用户管理，创建用户后自动复制目录下的启动文件到新用户宿主目录下。启动文件都是隐藏文件，需要加“–a ”参数查看。
+/etc/skel
+```
+
+```
+#可查看UID和GID的允许范围
+/etc/login.defs	
+```
+
+```
+#用useradd命令创建用户时的规则文件
+/etc/default/useradd
+```
+
+```
+#用户组配置文件(一个用户可以属于一个或多个组，同一个组内的用户之间有相似特性)
+/etc/group
+
+a若某用户属于root组，则其可以浏览root用户的宿主目录（ls –ld /root可以看到，/root目录对于root群组可读）；
+b若root用户把某个文件权限对组放开，则root组所有用户都可修改此文件；
+```
+
+```
+若某个用户文件非常重要，应让其拥有独立的组，或把用户的文件权限设为完全私有！
+```
+
+```
+group配置文件详解
+	root	：	x	：	0	：	
+	用户组名称		密码，真实密码放在/etc/gshadow中		GID
+	普通群组GID从500开始		组成员，不显示以这个组作为初始组的成员
+```
+
+```
+#用户组影子文件
+/etc/gshadow
+
+root	：		：		：	
+组名称		密码		组的管理者，若为root则省略		组成员列表
+```
+
+### groupadd
+
+```
+#新增组g1
+groupadd g1
+#新增组g2,设置其组id为800
+groupadd -g 800 g2
+#新增系统组(组id<500)
+groupadd -r systemgroup
+#查看新增组信息
+cat /etc/group
+```
+
+### groupmod
+
+![image-20191031154301026](images/image-20191031154301026.png)
+
+![image-20191031154325678](images/image-20191031154325678.png)
+
+```
+#将组g2的数值修改为801
+groupmod -g 801 g2
+#将组g2的名字修改为ggg2
+groupmod -n ggg2 g2
+#重复设置ggg2的组id
+groupmod -g 801 -o ggg2
+```
+
+### groupdel
+
+```
+#删除ggg2(若组中包含用户，则需先删除用户)
+groupdel ggg2
+```
+
+## 创建用户和组的特殊方法
+
+### 1修改配置文件
+
+① 添加用户记录：vi /etc/passwd
+
+| test0 | ：   | x    | ：   | 508  | ：   | 508  | :    |          | :    | /home/test0 | :    | /bin/bash |
+| ----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | -------- | ---- | ----------- | ---- | --------- |
+|       |      |      |      |      |      |      |      | 用户全名 |      |             |      |           |
+
+### 2.执行pwconv，让/etc/passwd和/etc/shadow同步，然后查看是否同步
+
+```
+cat /etc/shadow
+pwconv
+cat /etc/shadow					#test0的信息同步到了/etc/shadow中
+```
+
+### 3.修改/etc/group，添加私有组
+
+```
+①vi /etc/group
+	添加内容“test0:x:508:”
+②grpconv同步/etc/group和/etc/gshadow文件
+grpconv
+cat /etc/gshadow				#组test0的信息同步到了/etc/gshadow中
+```
+
+### 2.修改宿主目录
+
+1.创建用户主目录，并把启动文件复制过去
+
+① mkdir /home/test0
+
+② cp -r /etc/skel  /home/test0			***\*×\****
+
+ls -a /home/test0
+
+③ cp -r /etc/skel/. /home/test0			***\*√\****
+
+ls -a /home/test0
+
+2.改变新增用户宿主目录的属主和权限
+
+① ls -ld /home/test0			#查看/home/test0目录的属主和权限（属于root）
+
+② chown -R test0.test0 /home/test0		#把/home/test0的属主和属组都改为test0（第一个test0为属主，第二个test0为属组），参数R为递归，即对目录和目录下所有的文件和子目录都做修改
+
+③ chmod 700 /home/test0		#改变宿主目录的读写权限，仅test0具有所有权限
+
+④ ls -ld /home/test0
+
+(一)设置新用户的密码
+
+passwd test0
+
+(二)测试用户是否添加成功
+
+① su test0
+
+【注意】此时若命令提示符为“bash -4.1”，表示用户宿主目录有问题
+
+此时ls -a /home/test0查看，如果是如下内容，表示复制启动文件时出错。
+
+![img](images/wpsBF11.tmp.jpg) 
+
+应该为：cp  -r  /etc/skel/.  /home/test0
+
+## 一、用户和组维护命令
+
+### passwd
+
+```
+#设置当前用户密码
+passwd	
+#设置指定用户密码
+passwd test0
+#锁定test0密码，其无法登录
+passwd -l test0	
+#解锁test0
+passwd -u test0
+#查看用户密码信息
+cat /etc/shadow |grep test0
+#删除密码
+passwd -d test0
+#查看用户密码信息
+cat /etc/shadow |grep test0
+```
+
+### gpasswd
+
+> 设置组密码，或在组中添加、删除用户
+
+```
+#把test0用户添加到rjxy组中
+gpasswd –a test0 rjxy
+#查看test0的分组
+id test0
+
+```
+
+
+
+
+
+
+
+ 		
+
+cat /etc/group|grep test0		#可看到rjxy最后一项添加了test0
+
+② gpasswd –d test0 rjxy			#把test0用户从rjxy组中删除
+
+id test0
+
+cat /etc/group|grep test0		#可看到rjxy最后一项没有了test0
+
+③ gpasswd test0					#设置组test0的密码
+
+④ gpasswd –r test0				#取消组test0的密码
+
+3.su：切换用户
+
+4.pwck：检验用户配置文件/etc/passwd和/etc/shadow内容是否合法完整
+
+① pwck
+
+② rm -rf /home/test0
+
+pwck
+
+ 
+
+二、账户信息显示
+
+1.finger
+
+① finger test0			#显示test0的信息
+
+② finger					#显示所有登录用户的信息
+
+可在tty2中登录root用户，再回到图形界面用finger查看，然后在tty2中退出root，再用finger查看，比较结果
+
+2.id：显示用户的UID、GID和所属组
+
+3.w：详细查询当前已登录的用户
+
+4.who：显示已登录用户的简单信息
+
+ 
+
+三、图形界面下用户和组的配置
+
+系统→管理→用户和
 
 
 
