@@ -210,7 +210,10 @@ groupdel ggg2
 
 ### 1修改配置文件
 
-① 添加用户记录：vi /etc/passwd
+```
+#添加用户记录
+vim /etc/passwd
+```
 
 | test0 | ：   | x    | ：   | 508  | ：   | 508  | :    |          | :    | /home/test0 | :    | /bin/bash |
 | ----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | -------- | ---- | ----------- | ---- | --------- |
@@ -234,47 +237,53 @@ grpconv
 cat /etc/gshadow				#组test0的信息同步到了/etc/gshadow中
 ```
 
-### 2.修改宿主目录
+### 4.修改宿主目录
 
-1.创建用户主目录，并把启动文件复制过去
+#### 1.创建用户主目录，并把启动文件复制过去
 
-① mkdir /home/test0
-
-② cp -r /etc/skel  /home/test0			***\*×\****
-
+```
+#创建家目录
+mkdir /home/test0
+#复制必备文件(隐藏的文件)到家目录
+cp -r /etc/skel/. /home/test0
+#显示一下复制到隐藏文件了没有
 ls -a /home/test0
+```
 
-③ cp -r /etc/skel/. /home/test0			***\*√\****
+#### 2.改变新增用户宿主目录的属主和权限
 
-ls -a /home/test0
+```
+#查看/home/test0目录的属主和权限（属于root）
+ls -ld /home/test0
+#把/home/test0的属主和属组都改为test0（第一个test0为属主，第二个test0为属组），参数R为递归，即对目录和目录下所有的文件和子目录都做修改
+chown -R test0.test0 /home/test0
+#改变宿主目录的读写权限，仅test0具有所有权限
+chmod 700 /home/test0
+#显示宿主目录所有更改是否生效
+ ls -ld /home/test0
+```
 
-2.改变新增用户宿主目录的属主和权限
+### 5.设置新用户的密码
 
-① ls -ld /home/test0			#查看/home/test0目录的属主和权限（属于root）
-
-② chown -R test0.test0 /home/test0		#把/home/test0的属主和属组都改为test0（第一个test0为属主，第二个test0为属组），参数R为递归，即对目录和目录下所有的文件和子目录都做修改
-
-③ chmod 700 /home/test0		#改变宿主目录的读写权限，仅test0具有所有权限
-
-④ ls -ld /home/test0
-
-(一)设置新用户的密码
-
+```
 passwd test0
+```
 
-(二)测试用户是否添加成功
+#### 6.测试用户是否添加成功
 
-① su test0
+```
+su test0
+```
 
-【注意】此时若命令提示符为“bash -4.1”，表示用户宿主目录有问题
+>  此时若命令提示符为“bash -4.1”，表示用户宿主目录有问题
+>
+> 此时`ls -a /home/test0`查看，如果是如下内容，表示复制启动文件时出错。
+>
+> <img src="images/wpsBF11.tmp.jpg" alt="img" style="zoom:50%;" />
+>
+> 应该为：`cp  -r  /etc/skel/.  /home/test0`
 
-此时ls -a /home/test0查看，如果是如下内容，表示复制启动文件时出错。
-
-![img](images/wpsBF11.tmp.jpg) 
-
-应该为：cp  -r  /etc/skel/.  /home/test0
-
-## 一、用户和组维护命令
+## 用户和组维护命令
 
 ### passwd
 
@@ -304,62 +313,59 @@ cat /etc/shadow |grep test0
 gpasswd –a test0 rjxy
 #查看test0的分组
 id test0
+cat /etc/group|grep test0		#可看到rjxy最后一项添加了test0
+#把test0用户从rjxy组中删除
+gpasswd –d test0 rjxy
+id test0
+#可看到rjxy最后一项没有了test0
+cat /etc/group|grep test0
+#设置组test0的密码
+gpasswd test0	
+#取消组test0的密码
+gpasswd –r test0	
+```
 
+```
+su：切换用户
+pwck：检验用户配置文件/etc/passwd和/etc/shadow内容是否合法完整
+① pwck
+② rm -rf /home/test0
+pwck
+```
+
+## 账户信息显示(finger&id&w&who)
+
+```
+finger
+#显示test0的信息
+finger test0
+#显示所有登录用户的信息
+finger					
+#可在tty2中登录root用户，再回到图形界面用finger查看，然后在tty2中退出root，再用finger查看，比较结果
+```
+
+```
+#显示用户的UID、GID和所属组
+id
+```
+
+```
+#详细查询当前已登录的用户
+w
+```
+
+```
+#显示已登录用户的简单信息
+who
+```
+
+## 图形界面下用户和组的配置
+
+```
+系统→管理→用户和组
 ```
 
 
-
-
-
-
-
- 		
-
-cat /etc/group|grep test0		#可看到rjxy最后一项添加了test0
-
-② gpasswd –d test0 rjxy			#把test0用户从rjxy组中删除
-
-id test0
-
-cat /etc/group|grep test0		#可看到rjxy最后一项没有了test0
-
-③ gpasswd test0					#设置组test0的密码
-
-④ gpasswd –r test0				#取消组test0的密码
-
-3.su：切换用户
-
-4.pwck：检验用户配置文件/etc/passwd和/etc/shadow内容是否合法完整
-
-① pwck
-
-② rm -rf /home/test0
-
-pwck
-
- 
-
-二、账户信息显示
-
-1.finger
-
-① finger test0			#显示test0的信息
-
-② finger					#显示所有登录用户的信息
-
-可在tty2中登录root用户，再回到图形界面用finger查看，然后在tty2中退出root，再用finger查看，比较结果
-
-2.id：显示用户的UID、GID和所属组
-
-3.w：详细查询当前已登录的用户
-
-4.who：显示已登录用户的简单信息
-
- 
-
-三、图形界面下用户和组的配置
-
-系统→管理→用户和
 
 
 
