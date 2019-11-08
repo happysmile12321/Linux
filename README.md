@@ -7,6 +7,7 @@
 - 04 linux常用命令&权限&隐藏属性
 - 05 linux中vim编辑器的高级使用技巧&linux文件系统分区&linux和windows系统的格式化工具&linux磁盘用量工具df和du&linux分区工具fdisk&使用mount命令&修改配置文件挂载&mkfs格式化使用&UUID挂载文件分区
 - 06 linux用户管理&passwd和shadow配置文件详讲&useradd&usermod&userdel&groupadd&groupmod&groupdel&手动编程创建用户和组&gpasswd&finger&id&w&who的用法略讲&图形界面用户和组的配置
+- 07 linux磁盘配额&软件包管理&rpm&yum
 
 ## 笔记更新日志
 
