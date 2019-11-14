@@ -104,7 +104,7 @@ usermod -l uuu2 u2
 
 ```
 #将u7的群组修改为u1
-usermod -g u7 u1
+usermod -g u1 u7
 #将u3账户锁定，除root外其他用户无法切换
 root:usermod -L u3
 su rjxy
