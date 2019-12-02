@@ -10,6 +10,7 @@
 - 07 linux磁盘配额&软件包管理&rpm&yum
 - 08 linux网络基本配置&telnet登录&ssh登录
 - 09 linux配置ftp服务器(vsftp服务器端，ftp客户端)
+  - 附录：史上最全vsftpd配置文件讲解
 
 ## 笔记更新日志
 
